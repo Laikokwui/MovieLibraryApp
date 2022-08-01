@@ -2,6 +2,7 @@
 A simple app that displays a list of movies from an external API on the internet
 
 Link to the API: https://www.themoviedb.org/documentation/api
+
 Sign Up to get API Key: https://developers.themoviedb.org/3/getting‐started
 
 ## Start Screen
