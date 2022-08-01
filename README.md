@@ -1,6 +1,9 @@
 # movieappextension-android
 A simple app that displays a list of movies from an external API on the internet
 
+Link to the API: https://www.themoviedb.org/documentation/api
+Sign Up to get API Key: https://developers.themoviedb.org/3/getting‐started
+
 ## Start Screen
 ![image](https://user-images.githubusercontent.com/47911209/182082265-9d51cf35-1ba9-45b8-a9e1-66591f536d76.png)
 
