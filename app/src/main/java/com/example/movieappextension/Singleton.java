@@ -12,22 +12,19 @@ public class Singleton {
     private static Singleton mySingleton;
     private final ImageLoader imageLoader;
 
-    private Singleton(Context context){
+    private Singleton(Context context) {
+        int cacheSize = 4 * 1024 * 1024; // 4MiB or adjust dynamically
         RequestQueue requestQueue = Volley.newRequestQueue(context);
         imageLoader = new ImageLoader(requestQueue, new ImageLoader.ImageCache() {
-            private final LruCache<String, Bitmap> cache = new LruCache<>(4);
-
+            private final LruCache<String, Bitmap> cache = new LruCache<>(cacheSize);
+    
             @Override
             public Bitmap getBitmap(String url) {
-                Bitmap bitmap = cache.get(url);
-                if (bitmap == null) { System.out.println("Image not found in cache!"); }
-                else { System.out.println("Image found in cache!"); }
-                return bitmap;
+                return cache.get(url);
             }
-
+    
             @Override
             public void putBitmap(String url, Bitmap bitmap) {
-                System.out.println("putting url into the Bitmap!");
                 cache.put(url, bitmap);
             }
         });
