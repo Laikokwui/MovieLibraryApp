@@ -69,23 +69,35 @@ public class FragmentOne extends Fragment {
     }
 
     private void ReturnMovieList() {
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, Param1, null, new Response.Listener<JSONObject>() {
-
-            @Override
-            public void onResponse(JSONObject response) {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, Param1, null,
+            response -> {
                 try {
                     MyAdapter myAdapter = new MyAdapter(response.getJSONArray("results"), dbInteractionListener);
                     recyclerView.setAdapter(myAdapter);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) { }
-        });
-
-        final RequestQueue requestQueue = Volley.newRequestQueue(getContext());
-        requestQueue.add(jsonObjectRequest);
+            }, 
+            error -> {
+                // Handle error
+                if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                    Toast.makeText(getContext(), "Network Timeout. Please check your connection.", Toast.LENGTH_SHORT).show();
+                } else if (error instanceof AuthFailureError) {
+                    Toast.makeText(getContext(), "Authentication error.", Toast.LENGTH_SHORT).show();
+                } else if (error instanceof ServerError) {
+                    Toast.makeText(getContext(), "Server error. Please try again later.", Toast.LENGTH_SHORT).show();
+                } else if (error instanceof NetworkError) {
+                    Toast.makeText(getContext(), "Network error. Please check your internet connection.", Toast.LENGTH_SHORT).show();
+                } else if (error instanceof ParseError) {
+                    Toast.makeText(getContext(), "Error parsing server response.", Toast.LENGTH_SHORT).show();
+                } else {
+                    // General error
+                    Toast.makeText(getContext(), "An error occurred.", Toast.LENGTH_SHORT).show();
+                }
+                // Optionally, log the error details for debugging
+                Log.e("VolleyError", error.toString());
+            });
+    
+        Singleton.getInstance(getContext()).getRequestQueue().add(jsonObjectRequest);
     }
 }
