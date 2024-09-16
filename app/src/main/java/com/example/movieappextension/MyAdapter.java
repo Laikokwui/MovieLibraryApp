@@ -48,39 +48,44 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        String movie_title = "", genre_list = "", image_url = "", image_path = "";
-        double popularity = 0.0;
-        JSONObject jsonObject_movie;
-
+        Movie movie;
+        if (jsonArray == null) {
+            movie = watch_list.get(position);
+        } else {
+            JSONObject jsonObject_movie = jsonArray.optJSONObject(position);
+            if (jsonObject_movie != null) {
+                movie = parseMovieFromJSON(jsonObject_movie);
+            } else {
+                return; // Skip in case of null JSON object
+            }
+        }
+    
+        holder.textView_title.setText(movie.getTitle());
+        holder.textView_genres.setText(movie.getGenre());
+        holder.textView_popularities.setText(String.valueOf(movie.getPopularity()));
+    
+        String image_url = "https://image.tmdb.org/t/p/w300" + movie.getPoster_path();
+        ImageLoader imageLoader = Singleton.getInstance(holder.itemView.getContext()).getImageLoader();
+        holder.networkImageView.setImageUrl(image_url, imageLoader);
+    }
+    
+    private Movie parseMovieFromJSON(JSONObject jsonObject) {
         try {
-            if (jsonArray == null) {
-                movie_title = watch_list.get(position).getTitle();
-                genre_list = watch_list.get(position).getGenre();
-                popularity = watch_list.get(position).getPopularity();
-                image_path = watch_list.get(position).getPoster_path();
-            }
-            else {
-                jsonObject_movie = jsonArray.getJSONObject(position);
-                movie_title = jsonObject_movie.getString("title");
-                genre_list = getGenreType(jsonObject_movie.getJSONArray("genre_ids"));
-                popularity = jsonObject_movie.getDouble("popularity");
-                image_path = jsonObject_movie.getString("poster_path");
-            }
-            image_url = "https://image.tmdb.org/t/p/w300" + image_path;
+            return new Movie(
+                jsonObject.getInt("id"),
+                jsonObject.getString("title"),
+                getGenreType(jsonObject.getJSONArray("genre_ids")),
+                jsonObject.getString("overview"),
+                jsonObject.getString("poster_path"),
+                jsonObject.getString("backdrop_path"),
+                jsonObject.getDouble("popularity")
+            );
         } catch (JSONException e) {
             e.printStackTrace();
+            return null;
         }
-
-        holder.itemView.setTag(position);
-        holder.textView_title.setText(movie_title);
-        holder.textView_genres.setText(genre_list);
-        holder.textView_popularities.setText(String.valueOf(popularity));
-
-        ImageLoader imageLoader = Singleton.getInstance(context).getImageLoader();
-        imageLoader.get(image_url, ImageLoader.getImageListener(holder.networkImageView, android.R.drawable.ic_lock_lock, android.R.drawable.ic_dialog_alert));
-        holder.networkImageView.setImageUrl(image_url,imageLoader);
     }
-
+    
     @Override
     public int getItemCount() {
         int count;
