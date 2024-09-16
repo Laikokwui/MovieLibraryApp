@@ -55,7 +55,7 @@ public class MovieDatabase extends SQLiteOpenHelper {
         contentValues.put(KEY_POSTER_PATH, movie.getPoster_path());
         contentValues.put(KEY_BACKDROP_PATH, movie.getBackdrop_path());
         contentValues.put(KEY_POPULARITY, movie.getPopularity());
-        return db.insert(TABLE_NAME,null, contentValues);
+        return db.insertWithOnConflict(TABLE_NAME, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
     }
 
     public ArrayList<Movie> GetAllMovies() {
