@@ -49,19 +49,25 @@ public class FragmentOne extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view =  inflater.inflate(R.layout.fragment_one, container, false);
+        View view = inflater.inflate(R.layout.fragment_one, container, false);
         recyclerView = view.findViewById(R.id.recycler_view);
-
+    
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        DividerItemDecoration divider = new DividerItemDecoration(getContext(),DividerItemDecoration.VERTICAL);
+        DividerItemDecoration divider = new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(divider);
-
+    
         if (Param1.equals("null")) {
-            MyAdapter myAdapter = new MyAdapter(null,dbInteractionListener);
+            MyAdapter myAdapter = new MyAdapter(null, dbInteractionListener);
             recyclerView.setAdapter(myAdapter);
         }
         return view;
+    }
+    
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        recyclerView.setAdapter(null); // Clear the adapter to avoid leaks
+        dbInteractionListener = null;  // Clear listener reference
     }
 
     public void SetDbInteractionListener(MyAdapter.DbInteractionListener dbInteractionListener){
